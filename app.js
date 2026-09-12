@@ -501,3 +501,93 @@ window.sendFriendRequest = async function () { ... }
         return;
     }
 };
+
+                   document.getElementById("profilePicButton").onclick = () => {
+    loadSettings();
+    show(".settings-box");
+};
+
+                   if (userDoc.exists()) {
+    const data = userDoc.data();
+    document.getElementById("profilePicButton").src = data.pfp || "default.png";
+}
+
+                   async function loadSettings() {
+    const user = auth.currentUser;
+
+    // Load username + pfp
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const data = userDoc.data();
+
+    document.getElementById("newUsername").value = data.username;
+    document.getElementById("profilePicButton").src = data.pfp || "default.png";
+
+    // Load friends list
+    const q = query(
+        collection(db, "friends"),
+        where("users", "array-contains", user.uid)
+    );
+
+    const snap = await getDocs(q);
+    const box = document.getElementById("settingsFriendsList");
+    box.innerHTML = "";
+
+    snap.forEach(friend => {
+        const users = friend.data().users;
+        const otherUser = users.find(u => u !== user.uid);
+
+        const div = document.createElement("div");
+        div.textContent = `Friend: ${otherUser}`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => removeFriend(friend.id);
+
+        div.appendChild(removeBtn);
+        box.appendChild(div);
+    });
+}
+
+                   window.updateUsername = async function () {
+    const user = auth.currentUser;
+    const newName = document.getElementById("newUsername").value.trim();
+
+    if (newName.length < 3) {
+        showError("Username must be at least 3 characters.");
+        return;
+    }
+
+    await updateDoc(doc(db, "users", user.uid), {
+        username: newName
+    });
+
+    showError("Username updated!");
+};
+
+                   window.updateProfilePicture = async function () {
+    const user = auth.currentUser;
+    const file = document.getElementById("newPfp").files[0];
+
+    if (!file) {
+        showError("Please select a PNG file.");
+        return;
+    }
+
+    const pfpRef = ref(storage, `pfp/${user.uid}.png`);
+    await uploadBytes(pfpRef, file);
+    const url = await getDownloadURL(pfpRef);
+
+    await updateDoc(doc(db, "users", user.uid), {
+        pfp: url
+    });
+
+    document.getElementById("profilePicButton").src = url;
+
+    showError("Profile picture updated!");
+};
+
+                   async function removeFriend(friendDocId) {
+    await deleteDoc(doc(db, "friends", friendDocId));
+    showError("Friend removed.");
+    loadSettings(); // refresh list
+}
