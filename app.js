@@ -487,3 +487,17 @@ async function openChatWith(friendId) {
     loadChat(chatId);
     show(".chat-box");
 }
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+show(".friends-box");
+
+window.sendFriendRequest = async function () { ... }
+
+                   window.sendFriendRequest = function () {
+    const user = auth.currentUser;
+    if (!user) {
+        showError("You must be logged in to add friends.");
+        return;
+    }
+};
