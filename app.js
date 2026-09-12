@@ -106,13 +106,22 @@ window.signup = async function () {
 // LOGIN
 // ------------------------------
 window.login = async function () {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value.trim();
 
-    await signInWithEmailAndPassword(auth, email, pass);
+    if (!email.includes("@") || !email.includes(".")) {
+        showError("Please enter a valid email address.");
+        return;
+    }
 
-    show(".profile-box");
+    try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        show(".profile-box");
+    } catch (err) {
+        showError("Incorrect email or password.");
+    }
 };
+
 
 
 // ------------------------------
@@ -141,6 +150,17 @@ window.saveProfile = async function () {
     const username = document.getElementById("username").value;
     const file = document.getElementById("pfp").files[0];
 
+    if (username.length < 3) {
+    showError("Username must be at least 3 characters.");
+    return;
+}
+
+if (username.length > 20) {
+    showError("Username must be under 20 characters.");
+    return;
+}
+
+
     let pfpURL = "";
 
     if (file) {
@@ -165,6 +185,12 @@ window.saveProfile = async function () {
 window.sendInvite = async function () {
     const user = auth.currentUser;
     const targetEmail = document.getElementById("inviteEmail").value;
+
+    if (!targetEmail.includes("@") || !targetEmail.includes(".")) {
+    showError("Friend's email is invalid.");
+    return;
+}
+
 
     await addDoc(collection(db, "invites"), {
         from: user.uid,
@@ -216,6 +242,12 @@ onAuthStateChanged(auth, async (user) => {
 window.sendMessage = async function () {
     const text = document.getElementById("msg").value;
     if (!text.trim()) return;
+
+    if (!text.trim()) {
+    showError("Message cannot be empty.");
+    return;
+}
+
 
     const chatId = window.currentChat;
     const user = auth.currentUser;
