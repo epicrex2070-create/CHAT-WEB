@@ -2,37 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat App</title>
+    <title>Chat Web</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  window.auth = getAuth(app);
-  window.db = getFirestore(app);
-  window.storage = getStorage(app);
-</script>
-
-    
 <div class="container">
 
     <h1 class="title">Invite‑Only Chat</h1>
 
+    <!-- LOGIN BOX -->
     <div class="login-box">
         <h2>Login</h2>
         <input id="email" type="email" placeholder="Email">
@@ -41,6 +20,7 @@
         <button onclick="signup()">Sign Up</button>
     </div>
 
+    <!-- PROFILE BOX -->
     <div class="profile-box hidden">
         <h2>Your Profile</h2>
         <input id="username" type="text" placeholder="Custom Name">
@@ -48,21 +28,4 @@
         <button onclick="saveProfile()">Save Profile</button>
     </div>
 
-    <div class="invite-box hidden">
-        <h2>Send Invite</h2>
-        <input id="inviteEmail" type="email" placeholder="Friend's Email">
-        <button onclick="sendInvite()">Send Invite</button>
-    </div>
-
-    <div class="chat-box hidden">
-        <h2>Chat</h2>
-        <div id="messages"></div>
-        <input id="msg" type="text" placeholder="Message">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-
-</div>
-
-<script src="app.js"></script>
-</body>
-</html>
+    <!-- INVITE BOX -->
