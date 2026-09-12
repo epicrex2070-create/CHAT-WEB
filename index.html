@@ -7,8 +7,29 @@
 </head>
 <body>
 
+<div id="topBar">
+    <img id="profilePicButton" src="" alt="Profile" class="top-profile-pic">
+</div>
+
+    
 <div class="container">
 
+<div class="settings-box hidden">
+    <h2>Profile Settings</h2>
+
+    <label>Change Username</label>
+    <input id="newUsername" type="text" placeholder="New Username">
+    <button onclick="updateUsername()">Save Username</button>
+
+    <label>Change Profile Picture</label>
+    <input id="newPfp" type="file" accept="image/png">
+    <button onclick="updateProfilePicture()">Save Picture</button>
+
+    <h3>Your Friends</h3>
+    <div id="settingsFriendsList"></div>
+</div>
+
+    
     <div class="friends-box hidden">
     <h2>Your Friends</h2>
     <div id="friendsList"></div>
