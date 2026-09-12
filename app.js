@@ -423,3 +423,67 @@ async function loadChat(chatId) {
         });
     });
 }
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    const q = query(
+        collection(db, "friends"),
+        where("users", "array-contains", user.uid)
+    );
+
+    onSnapshot(q, (snap) => {
+        const box = document.getElementById("friendsList");
+        box.innerHTML = "";
+
+        if (snap.empty) {
+            box.innerHTML = "No friends yet.";
+            return;
+        }
+
+        show(".friends-box");
+
+        snap.forEach(friend => {
+            const users = friend.data().users;
+            const otherUser = users.find(u => u !== user.uid);
+
+            const div = document.createElement("div");
+            div.textContent = `Friend: ${otherUser}`;
+            div.classList.add("friend-item");
+
+            div.onclick = () => openChatWith(otherUser);
+
+            box.appendChild(div);
+        });
+    });
+});
+
+async function openChatWith(friendId) {
+    const user = auth.currentUser;
+
+    // Find existing chat
+    const q = query(
+        collection(db, "connections"),
+        where("users", "array-contains", user.uid)
+    );
+
+    let chatId = null;
+
+    const snap = await getDocs(q);
+    snap.forEach(conn => {
+        if (conn.data().users.includes(friendId)) {
+            chatId = conn.id;
+        }
+    });
+
+    // If no chat exists, create one
+    if (!chatId) {
+        const chatRef = await addDoc(collection(db, "connections"), {
+            users: [user.uid, friendId]
+        });
+        chatId = chatRef.id;
+    }
+
+    loadChat(chatId);
+    show(".chat-box");
+}
