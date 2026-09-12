@@ -139,7 +139,31 @@ onAuthStateChanged(auth, async (user) => {
         // Existing user → go to invite screen
         show(".invite-box");
     }
+
+    async function declineFriend(req) {
+    await updateDoc(doc(db, "friendRequests", req.id), {
+        status: "declined"
+    });
+
+    showError("Friend request declined.");
+}
 });
+
+async function acceptFriend(req) {
+    const user = auth.currentUser;
+    const fromUser = req.data().from;
+
+    // Add both users to each other's friends list
+    await setDoc(doc(db, "friends", user.uid + "_" + fromUser), {
+        users: [user.uid, fromUser]
+    });
+
+    await updateDoc(doc(db, "friendRequests", req.id), {
+        status: "accepted"
+    });
+
+    showError("Friend added!");
+}
 
 
 // ------------------------------
@@ -191,6 +215,7 @@ window.sendInvite = async function () {
     return;
 }
 
+    
 
     await addDoc(collection(db, "invites"), {
         from: user.uid,
@@ -198,8 +223,121 @@ window.sendInvite = async function () {
         status: "pending"
     });
 
+    async function openChatWith(friendId) {
+    const user = auth.currentUser;
+
+    // Find existing chat
+    const q = query(
+        collection(db, "connections"),
+        where("users", "array-contains", user.uid)
+    );
+
+    let chatId = null;
+
+    const snap = await getDocs(q);
+    snap.forEach(conn => {
+        if (conn.data().users.includes(friendId)) {
+            chatId = conn.id;
+        }
+    });
+
+    // If no chat exists, create one
+    if (!chatId) {
+        const chatRef = await addDoc(collection(db, "connections"), {
+            users: [user.uid, friendId]
+        });
+        chatId = chatRef.id;
+    }
+
+    loadChat(chatId);
+    show(".chat-box");
+}
+
+
     alert("Invite sent!");
 };
+
+window.sendFriendRequest = async function () {
+    const user = auth.currentUser;
+    const targetEmail = document.getElementById("friendEmail").value.trim();
+
+    if (!targetEmail.includes("@") || !targetEmail.includes(".")) {
+        showError("Please enter a valid email.");
+        return;
+    }
+
+    await addDoc(collection(db, "friendRequests"), {
+        from: user.uid,
+        toEmail: targetEmail,
+        status: "pending"
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    const q = query(
+        collection(db, "friends"),
+        where("users", "array-contains", user.uid)
+    );
+
+    onSnapshot(q, (snap) => {
+        const box = document.getElementById("friendsList");
+        box.innerHTML = "";
+
+        snap.forEach(friend => {
+            const users = friend.data().users;
+            const otherUser = users.find(u => u !== user.uid);
+
+            const div = document.createElement("div");
+            div.textContent = `Friend: ${otherUser}`;
+            div.onclick = () => openChatWith(otherUser);
+
+            box.appendChild(div);
+        });
+    });
+});
+
+
+    showError("Friend request sent!");
+};
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    const q = query(
+        collection(db, "friendRequests"),
+        where("toEmail", "==", user.email),
+        where("status", "==", "pending")
+    );
+
+    onSnapshot(q, (snap) => {
+        const box = document.getElementById("friendRequests");
+        box.innerHTML = "";
+
+        if (snap.empty) {
+            return;
+        }
+
+        show(".friend-requests-box");
+
+        snap.forEach(req => {
+            const div = document.createElement("div");
+            div.textContent = `Friend request from: ${req.data().from}`;
+
+            const acceptBtn = document.createElement("button");
+            acceptBtn.textContent = "Accept";
+            acceptBtn.onclick = () => acceptFriend(req);
+
+            const declineBtn = document.createElement("button");
+            declineBtn.textContent = "Decline";
+            declineBtn.onclick = () => declineFriend(req);
+
+            div.appendChild(acceptBtn);
+            div.appendChild(declineBtn);
+            box.appendChild(div);
+        });
+    });
+});
+
 
 
 // ------------------------------
