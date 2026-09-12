@@ -103,3 +103,7 @@ button:hover {
 .friend-item:hover {
     background: #e0e0e0;
 }
+
+.friend-request-box {
+    display: none;
+}
