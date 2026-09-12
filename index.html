@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title">Invite‑Only Chat</h1>
+
+    <div class="login-box">
+        <h2>Login</h2>
+        <input id="email" type="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button onclick="signup()">Sign Up</button>
+    </div>
+
+    <div class="profile-box hidden">
+        <h2>Your Profile</h2>
+        <input id="username" type="text" placeholder="Custom Name">
+        <input id="pfp" type="file" accept="image/png">
+        <button onclick="saveProfile()">Save Profile</button>
+    </div>
+
+    <div class="invite-box hidden">
+        <h2>Send Invite</h2>
+        <input id="inviteEmail" type="email" placeholder="Friend's Email">
+        <button onclick="sendInvite()">Send Invite</button>
+    </div>
+
+    <div class="chat-box hidden">
+        <h2>Chat</h2>
+        <div id="messages"></div>
+        <input id="msg" type="text" placeholder="Message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
