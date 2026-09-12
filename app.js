@@ -79,13 +79,27 @@ function show(box) {
 // SIGN UP
 // ------------------------------
 window.signup = async function () {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value.trim();
 
-    await createUserWithEmailAndPassword(auth, email, pass);
+    if (!email.includes("@") || !email.includes(".")) {
+        showError("Please enter a valid email address.");
+        return;
+    }
 
-    show(".profile-box");
+    if (pass.length < 6) {
+        showError("Password must be at least 6 characters.");
+        return;
+    }
+
+    try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        show(".profile-box");
+    } catch (err) {
+        showError(err.message);
+    }
 };
+
 
 
 // ------------------------------
