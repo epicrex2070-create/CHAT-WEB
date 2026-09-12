@@ -1,3 +1,14 @@
+function showError(msg) {
+    const box = document.getElementById("error");
+    box.textContent = msg;
+    box.classList.remove("hidden");
+
+    setTimeout(() => {
+        box.classList.add("hidden");
+    }, 4000);
+}
+
+
 // ------------------------------
 // Firebase Imports (MODERN)
 // ------------------------------
