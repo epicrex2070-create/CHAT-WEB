@@ -1,90 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Chat Web</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Chat Web</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="topBar">
-    <img id="profilePicButton" src="" alt="Profile" class="top-profile-pic">
-</div>
+  <!-- Top Bar -->
+  <div id="topBar" class="hidden">
+    <img id="profilePicButton" src="default.png" class="top-profile-pic" alt="Profile">
+  </div>
 
-    <div id="topBar" class="hidden">
-    <img id="profilePicButton" src="" class="top-profile-pic">
-</div>
+  <!-- Error box -->
+  <div id="error" class="hidden"></div>
 
-    
-<div class="container">
-
-<div class="settings-box hidden">
-    <h2>Profile Settings</h2>
-
-    <label>Change Username</label>
-    <input id="newUsername" type="text" placeholder="New Username">
-    <button onclick="updateUsername()">Save Username</button>
-
-    <label>Change Profile Picture</label>
-    <input id="newPfp" type="file" accept="image/png">
-    <button onclick="updateProfilePicture()">Save Picture</button>
-
-    <h3>Your Friends</h3>
-    <div id="settingsFriendsList"></div>
-</div>
-
-    
-    <div class="friends-box hidden">
-    <h2>Your Friends</h2>
-    <div id="friendsList"></div>
-</div>
-
-
-    <div id="error" class="error hidden"></div>
-
-    <div class="friends-box hidden">
-    <h2>Your Friends</h2>
-    <div id="friendsList"></div>
-</div>
-
-
+  <!-- Login / Signup -->
+  <div class="container login-box">
     <h1 class="title">Invite‑Only Chat</h1>
+    <h2>Login</h2>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
 
-    <!-- LOGIN BOX -->
-    <div class="login-box">
-        <h2>Login</h2>
-        <input id="email" type="email" placeholder="Email">
-        <input id="password" type="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-        <button onclick="signup()">Sign Up</button>
+  <!-- Messenger layout -->
+  <div class="messenger hidden">
+    <!-- Friends sidebar -->
+    <div class="friends-box">
+      <h2>Your Friends</h2>
+      <div id="friendsList"></div>
+
+      <h3>Add Friend</h3>
+      <input id="friendEmail" type="email" placeholder="Friend's email">
+      <button onclick="sendFriendRequest()">Send Friend Request</button>
+
+      <h3>Friend Requests</h3>
+      <div id="friendRequests"></div>
     </div>
 
-    <!-- PROFILE BOX -->
-    <div class="profile-box hidden">
-        <h2>Your Profile</h2>
-        <input id="username" type="text" placeholder="Custom Name">
-        <input id="pfp" type="file" accept="image/png">
-        <button onclick="saveProfile()">Save Profile</button>
+    <!-- Chat panel -->
+    <div class="chat-box">
+      <h2>Chat</h2>
+      <div id="messages"></div>
+      <input id="msg" type="text" placeholder="Message">
+      <button onclick="sendMessage()">Send</button>
     </div>
+  </div>
 
-    <div class="friend-requests-box hidden">
-    <h2>Friend Requests</h2>
-    <div id="friendRequests"></div>
-</div>
+  <!-- Slide‑in Profile Settings -->
+  <div class="settings-panel hidden" id="settingsPanel">
+    <div class="settings-box">
+      <h2>Profile Settings</h2>
 
+      <label>Change Username</label>
+      <input id="newUsername" type="text" placeholder="New Username">
+      <button onclick="updateUsername()">Save Username</button>
 
-    <!-- CHAT BOX -->
-    <div class="chat-box hidden">
-        <h2>Chat</h2>
-        <div id="messages"></div>
-        <input id="msg" type="text" placeholder="Message">
-        <button onclick="sendMessage()">Send</button>
+      <label>Change Profile Picture (PNG)</label>
+      <input id="newPfp" type="file" accept="image/png">
+      <button onclick="updateProfilePicture()">Save Picture</button>
+
+      <h3>Your Friends</h3>
+      <div id="settingsFriendsList"></div>
+
+      <button onclick="closeSettings()">Close</button>
     </div>
+  </div>
 
-</div>
+  <!-- Initial profile setup -->
+  <div class="container profile-box hidden">
+    <h2>Your Profile</h2>
+    <input id="username" type="text" placeholder="Custom Name">
+    <input id="pfp" type="file" accept="image/png">
+    <button onclick="saveProfile()">Save Profile</button>
+  </div>
 
-<!-- Load your full Firebase backend -->
-<script type="module" src="app.js"></script>
-
+  <script type="module" src="app.js"></script>
 </body>
 </html>
