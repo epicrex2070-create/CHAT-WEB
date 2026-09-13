@@ -1,3 +1,11 @@
+
+
+
+
+    // User is logged in
+    document.getElementById("topBar").classList.remove("hidden");
+
+
 function showError(msg) {
     const box = document.getElementById("error");
     box.textContent = msg;
@@ -127,27 +135,46 @@ window.login = async function () {
 // ------------------------------
 // AUTH STATE LISTENER
 // ------------------------------
-onAuthStateChanged(auth, async (user) => {
-    if (!user) return;
 
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        // User is logged OUT
+        show(".login-box");
+
+        // Hide everything else
+        document.getElementById("topBar")?.classList.add("hidden");
+        document.querySelector(".profile-box")?.classList.add("hidden");
+        document.querySelector(".invite-box")?.classList.add("hidden");
+        document.querySelector(".chat-box")?.classList.add("hidden");
+        document.querySelector(".friends-box")?.classList.add("hidden");
+        document.querySelector(".settings-box")?.classList.add("hidden");
+
+        return;
+    }
+
+    // User is logged IN
+    document.getElementById("topBar")?.classList.remove("hidden");
+
+    // Load user profile data
     const userDoc = await getDoc(doc(db, "users", user.uid));
 
     if (!userDoc.exists()) {
         // New user → go to profile setup
         show(".profile-box");
-    } else {
-        // Existing user → go to invite screen
-        show(".invite-box");
+        return;
     }
 
-    async function declineFriend(req) {
-    await updateDoc(doc(db, "friendRequests", req.id), {
-        status: "declined"
-    });
+    // Existing user → show friends list (Messenger-style)
+    show(".friends-box");
 
-    showError("Friend request declined.");
-}
+    // Load profile picture into top-right button
+    const data = userDoc.data();
+    document.getElementById("profilePicButton").src = data.pfp || "default.png";
+
+    // Load friends list
+    loadFriendsList(user.uid);
 });
+
 
 async function acceptFriend(req) {
     const user = auth.currentUser;
